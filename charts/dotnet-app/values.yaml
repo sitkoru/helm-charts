@@ -31,10 +31,12 @@ securityContext: {}
 service:
   type: ClusterIP
   port: 80
+  grpcPort: 81
   annotations: {}
 
 ingress:
   enabled: false
+  grpcEnabled: false
   className: ""
   annotations: {}
     # kubernetes.io/ingress.class: nginx
@@ -44,6 +46,8 @@ ingress:
       paths:
         - path: /
           pathType: ImplementationSpecific
+      grpcPaths: 
+        - /Grpc
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:

@@ -1,13 +1,15 @@
+---
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "dotnet-app.fullname" . }}
   labels:
     {{- include "dotnet-app.labels" . | nindent 4 }}
-  {{- with .Values.service.annotations }}
   annotations:
+  {{- with .Values.service.annotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
+    ingress.alb.yc.io/transport-security: tls
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -15,5 +17,27 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+  selector:
+    {{- include "dotnet-app.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ include "dotnet-app.fullname" . }}-grpc"
+  labels:
+    {{- include "dotnet-app.labels" . | nindent 4 }}
+  annotations:
+  {{- with .Values.service.annotations }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+    ingress.alb.yc.io/protocol: http2
+    ingress.alb.yc.io/transport-security: tls
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.grpcPort }}
+      targetPort: {{ .Values.service.grpcPort }}
+      protocol: TCP
+      name: grpc
   selector:
     {{- include "dotnet-app.selectorLabels" . | nindent 4 }}
