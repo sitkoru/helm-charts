@@ -14,16 +14,12 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 spec:
   ingressClassName: {{ .Values.ingress.className }}
-  {{- if .Values.ingress.tls }}
   tls:
-    {{- range .Values.ingress.tls }}
+    {{- range .Values.ingress.hosts }}
     - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
+        - {{ .host | quote }}
+      secretName: {{ .tlsSecretName | quote }}
     {{- end }}
-  {{- end }}
   rules:
     {{- range .Values.ingress.hosts }}
     - host: {{ .host | quote }}
@@ -49,7 +45,7 @@ kind: Ingress
 metadata:
   name: "{{ $fullName }}-grpc"
   labels:
-    {{- include "dotnet-app.labels" . | nindent 4 }}  
+    {{- include "dotnet-app.labels" . | nindent 4 }}
   annotations:
   {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
@@ -57,16 +53,12 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
 spec:
   ingressClassName: {{ .Values.ingress.className }}
-  {{- if .Values.ingress.tls }}
   tls:
-    {{- range .Values.ingress.tls }}
+    {{- range .Values.ingress.hosts }}
     - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
+        - {{ .host | quote }}
+      secretName: {{ .tlsSecretName | quote }}
     {{- end }}
-  {{- end }}
   rules:
     {{- range .Values.ingress.hosts }}
     - host: {{ .host | quote }}
