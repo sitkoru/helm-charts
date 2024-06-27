@@ -12,7 +12,6 @@ metadata:
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
-    ingress.alb.yc.io/upgrade-types: WebSocket
   {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
