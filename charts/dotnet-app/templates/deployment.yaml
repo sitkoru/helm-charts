@@ -47,6 +47,6 @@ spec:
               value: {{ $v | quote }}
           {{- end }}
             - name: APPLICATION__WEB__PORTS__gRPC__Port
-              value: { { .Values.service.grpcPort } }
+              value: {{ .Values.service.grpcPort }}
             - name: APPLICATION__WEB__PORTS__gRPC__ExternalAddress
               value: "{{ include "dotnet-app.fullname" . }}-grpc.{{ .Release.Namespace}}.svc.cluster.local"
