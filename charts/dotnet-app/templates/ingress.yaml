@@ -72,7 +72,7 @@ spec:
         paths:
           {{- range .grpcPaths }}
           - path: {{ . }}
-            pathType: Prefix
+            pathType: ImplementationSpecific
             backend:
               service:
                 name: "{{ $fullName }}-grpc"
