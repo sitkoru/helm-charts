@@ -50,3 +50,10 @@ spec:
               value: "{{ .Values.service.grpcPort }}"
             - name: APPLICATION__WEB__PORTS__gRPC__ExternalAddress
               value: "{{ include "dotnet-app.fullname" . }}-grpc.{{ .Release.Namespace}}.svc.cluster.local"
+          {{- if or .Values.secrets }}
+          envFrom:
+          {{- end }}
+          {{- if .Values.secrets }}
+            - secretRef:
+                name: {{ include "dotnet-app.fullname" . }}
+          {{- end }}

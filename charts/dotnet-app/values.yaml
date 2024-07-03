@@ -84,3 +84,5 @@ autoscaling:
 # affinity: {}
 
 env: { }
+secrets: { }
+b64secrets: { }
