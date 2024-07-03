@@ -57,3 +57,25 @@ spec:
             - secretRef:
                 name: {{ include "dotnet-app.fullname" . }}
           {{- end }}
+          startupProbe:
+            httpGet:
+              path: /health/startup
+              port: {{ .Values.service.port }}
+              scheme: {{ .Values.service.scheme }}
+            failureThreshold: 30
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.service.port }}
+              scheme: {{ .Values.service.scheme }}
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            timeoutSeconds: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: {{ .Values.service.port }}
+              scheme: {{ .Values.service.scheme }}
+            successThreshold: 3
