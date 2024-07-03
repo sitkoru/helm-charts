@@ -51,6 +51,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
     nginx.ingress.kubernetes.io/backend-protocol: "GRPCS"
+    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   tls:
