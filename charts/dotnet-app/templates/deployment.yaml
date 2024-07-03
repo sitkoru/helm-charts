@@ -57,6 +57,7 @@ spec:
             - secretRef:
                 name: {{ include "dotnet-app.fullname" . }}
           {{- end }}
+          {{- if .Values.healthChecks }}
           startupProbe:
             httpGet:
               path: /health/startup
@@ -79,3 +80,4 @@ spec:
               port: {{ .Values.service.port }}
               scheme: {{ .Values.service.scheme }}
             successThreshold: 3
+          {{- end }}
