@@ -34,7 +34,7 @@ service:
   grpcPort: 81
   scheme: "HTTPS"
   annotations: { }
-
+environment: "Production"
 ingress:
   enabled: true
   grpcEnabled: false
@@ -52,12 +52,30 @@ ingress:
       tlsSecretName: ""
 
 resources:
-  limits:
-    cpu: 2
-    memory: 1Gi
-  requests:
-    cpu: 0.1
-    memory: 256Mi
+  production:
+    limits:
+      cpu: 2
+      memory: 1Gi
+    requests:
+      cpu: 0.5
+      memory: 512Mi
+  staging:
+    limits:
+      cpu: 1
+      memory: 512Mi
+    requests:
+      cpu: 0.1
+      memory: 256Mi
+  other: { }
+
+environment_env:
+  other: { }
+  production:
+    "ASPNETCORE_ENVIRONMENT": "Production"
+    "DOTNET_GCHighMemPercent": "5A"
+  staging:
+    "ASPNETCORE_ENVIRONMENT": "Staging"
+    "DOTNET_GCHighMemPercent": "3C"
 
 autoscaling:
   enabled: false

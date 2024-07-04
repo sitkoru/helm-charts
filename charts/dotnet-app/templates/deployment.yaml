@@ -1,3 +1,13 @@
+{{- if eq .Values.environment "Production" }}
+{{- $dummy := set . "envVars" .Values.environment_env.production -}}
+{{- $dummy2 := set . "envResources" .Values.resources.production -}}
+{{- else if eq .Values.environment "Staging" }}
+{{- $dummy := set . "envVars" .Values.environment_env.staging -}}
+{{- $dummy2 := set . "envResources" .Values.resources.staging -}}
+{{- else }}
+{{- $dummy := set . "envVars" .Values.environment_env.other -}}
+{{- $dummy2 := set . "envResources" .Values.resources.other -}}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -40,9 +50,13 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .envResources | nindent 12 }}
           env:
           {{ range $k, $v := .Values.env }}
+            - name: {{ $k | quote }}
+              value: {{ $v | quote }}
+          {{- end }}
+          {{ range $k, $v := .envVars }}
             - name: {{ $k | quote }}
               value: {{ $v | quote }}
           {{- end }}

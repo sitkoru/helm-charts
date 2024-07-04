@@ -11,13 +11,13 @@ metadata:
   {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- if .Values.ingress.enableStickiness }}
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "{{- .Values.ingress.stickyCookieName }}"
+  {{- end }}
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-  {{- if .Values.ingress.enableStickiness }}
-    nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/session-cookie-name: {{- .Values.ingress.stickyCookieName | quote }}
-  {{- end }}
     nginx.ingress.kubernetes.io/configuration-snippet: |
       location ~ ^/(health|healthz|ready) {
         deny all;
