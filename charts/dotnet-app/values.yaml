@@ -24,7 +24,7 @@ securityContext: { }
   # capabilities:
   #   drop:
   #   - ALL
-  # readOnlyRootFilesystem: true
+# readOnlyRootFilesystem: true
 # runAsNonRoot: true
 # runAsUser: 1000
 healthChecks: true
@@ -40,6 +40,8 @@ ingress:
   grpcEnabled: false
   className: "nginx"
   annotations: { }
+  enableStickiness: true
+  stickyCookieName: "lbs" # Load Balancer Sticky = lbs
   hosts:
     - host: chart-example.local
       paths:
