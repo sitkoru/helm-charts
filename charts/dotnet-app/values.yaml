@@ -72,10 +72,12 @@ environment_env:
   other: { }
   production:
     "ASPNETCORE_ENVIRONMENT": "Production"
-    "DOTNET_GCHighMemPercent": "5A"
+    "DOTNET_gcServer": "1"
+    "DOTNET_GCDynamicAdaptationMode": "1"
   staging:
     "ASPNETCORE_ENVIRONMENT": "Staging"
-    "DOTNET_GCHighMemPercent": "3C"
+    "DOTNET_gcServer": "1"
+    "DOTNET_GCDynamicAdaptationMode": "1"
 
 autoscaling:
   enabled: false
