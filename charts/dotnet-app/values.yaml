@@ -42,6 +42,7 @@ ingress:
   annotations: { }
   enableStickiness: true
   stickyCookieName: "lbs" # Load Balancer Sticky = lbs
+  backendProtocol: "HTTPS"
   hosts:
     - host: chart-example.local
       paths:
