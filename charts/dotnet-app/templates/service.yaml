@@ -42,5 +42,9 @@ spec:
       targetPort: {{ .Values.service.grpcPort }}
       protocol: TCP
       name: grpc
+    - port: {{ .Values.service.grpcInsecurePort }}
+      targetPort: {{ .Values.service.grpcInsecurePort }}
+      protocol: TCP
+      name: grpc-insecure
   selector:
     {{- include "dotnet-app.selectorLabels" . | nindent 4 }}

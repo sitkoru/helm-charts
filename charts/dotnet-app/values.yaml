@@ -32,6 +32,7 @@ service:
   type: NodePort
   port: 80
   grpcPort: 81
+  grpcInsecurePort: 82
   scheme: "HTTPS"
   annotations: { }
 environment: "Production"
