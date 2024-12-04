@@ -41,6 +41,7 @@ ingress:
   className: "nginx"
   annotations: { }
   enableStickiness: true
+  secureHealthLocations: true
   stickyCookieName: "lbs" # Load Balancer Sticky = lbs
   backendProtocol: "HTTPS"
   hosts:

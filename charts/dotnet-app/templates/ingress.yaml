@@ -18,11 +18,13 @@ metadata:
     nginx.ingress.kubernetes.io/backend-protocol: "{{- .Values.ingress.backendProtocol }}"
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+  {{- if .Values.ingress.secureHealthLocations }}
     nginx.ingress.kubernetes.io/configuration-snippet: |
       location ~ ^/(health|healthz|ready) {
         deny all;
         return 404;
       }
+  {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   tls:
