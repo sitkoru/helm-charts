@@ -9,6 +9,8 @@ image:
   name: ""
   pullPolicy: IfNotPresent
   tag: ""
+  
+dumpsVolume: ""
 
 imagePullSecrets: [ ]
 nameOverride: ""

@@ -33,6 +33,12 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      volumes:
+      {{- if or .Values.dumpsVolume }}
+        - name: crashdumps
+          persistentVolumeClaim:
+            claimName: {{ .Values.dumpsVolume }}
+      {{- end }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
@@ -41,6 +47,12 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Release.Name }}
+          volumeMounts:
+          {{- if or .Values.dumpsVolume }}
+            - name: crashdumps
+              mountPath: /tmp/crashdumps
+              subPath: {{ .Release.Name }}
+          {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.registry }}/{{ .Values.image.name }}:{{ .Values.image.tag }}"
@@ -68,6 +80,18 @@ spec:
               value: "{{ include "dotnet-app.fullname" . }}-grpc.{{ .Release.Namespace}}.svc.cluster.local"
             - name: APPLICATION__WEB__PORTS__gRPCInsecure__ExternalAddress
               value: "{{ include "dotnet-app.fullname" . }}-grpc.{{ .Release.Namespace}}.svc.cluster.local"
+          {{- if or .Values.dumpsVolume }}
+            - name: DOTNET_DbgEnableMiniDump
+              value: "1"
+            - name: COMPlus_DbgEnableMiniDump
+              value: "1"
+            - name: DOTNET_EnableCrashReport
+              value: "1"
+            - name: DOTNET_DbgMiniDumpName
+              value: "/tmp/crashdumps/coredump.%p.%e.%h.%t.dmp"
+            - name: COMPlus_DbgMiniDumpName
+              value: "/tmp/crashdumps/coredump.%p.%e.%h.%t.dmp"
+          {{- end }}
           {{- if or .Values.secrets }}
           envFrom:
           {{- end }}
