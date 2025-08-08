@@ -31,7 +31,6 @@ securityContext: { }
 # runAsUser: 1000
 healthChecks: true
 service:
-  type: NodePort
   port: 80
   grpcPort: 81
   grpcInsecurePort: 82
