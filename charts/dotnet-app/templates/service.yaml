@@ -12,9 +12,6 @@ metadata:
     ingress.alb.yc.io/transport-security: tls
 spec:
   type: {{ .Values.service.type }}
-  {{- if .Values.ingress.enableStickiness }}
-  externalTrafficPolicy: Local
-  {{- end }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: http
