@@ -2,6 +2,15 @@ apiVersion: v1
 entries:
   dotnet-app:
   - apiVersion: v2
+    created: "2025-09-03T13:28:41.116099398Z"
+    description: SitkoRu dotnet app
+    digest: 2890fb05043f246a2f23a0fef5036c64c06c0284cf203eee85bc0fc40acf6d22
+    name: dotnet-app
+    type: application
+    urls:
+    - https://github.com/sitkoru/helm-charts/releases/download/dotnet-app-0.26.0/dotnet-app-0.26.0.tgz
+    version: 0.26.0
+  - apiVersion: v2
     created: "2025-08-11T07:03:55.279979947Z"
     description: SitkoRu dotnet app
     digest: acfadc77f1cb01a324f9dba4fe215eee29649907696735c33ba9bad53424ccc0
@@ -235,4 +244,4 @@ entries:
     urls:
     - https://github.com/sitkoru/helm-charts/releases/download/dotnet-app-0.1.0/dotnet-app-0.1.0.tgz
     version: 0.1.0
-generated: "2025-08-11T07:03:55.280181415Z"
+generated: "2025-09-03T13:28:41.116370816Z"
