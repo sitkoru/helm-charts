@@ -47,7 +47,7 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- if .Values.affinity }}
       affinity:
-        {{- toYaml .Values.affinity | nindent 4 }}
+        {{- toYaml .Values.affinity | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Release.Name }}
