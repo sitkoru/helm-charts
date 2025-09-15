@@ -107,7 +107,7 @@ autoscaling:
 
 # tolerations: []
 
-# affinity: {}
+affinity: { }
 
 env: { }
 secrets: { }

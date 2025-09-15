@@ -45,6 +45,10 @@ spec:
       {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.affinity }}
+      affinity:
+        {{- toYaml .Values.affinity | nindent 4 }}
+      {{- end }}
       containers:
         - name: {{ .Release.Name }}
           volumeMounts:
