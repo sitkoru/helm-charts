@@ -36,7 +36,7 @@ Common labels
 {{- define "dotnet-app.labels" -}}
 helm.sh/chart: {{ include "dotnet-app.chart" . }}
 {{ include "dotnet-app.selectorLabels" . }}
-app.kubernetes.io/version: {{ .Values.image.tag | quote }}
+app.kubernetes.io/version: {{ .Values.image.tag | splitList "@" | first | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
