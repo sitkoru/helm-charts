@@ -96,10 +96,8 @@ spec:
             - name: COMPlus_DbgMiniDumpName
               value: "/tmp/crashdumps/coredump.%p.%e.%h.%t.dmp"
           {{- end }}
-          {{- if or .Values.secrets }}
+          {{- if or .Values.secrets .Values.b64secrets }}
           envFrom:
-          {{- end }}
-          {{- if .Values.secrets }}
             - secretRef:
                 name: {{ include "dotnet-app.fullname" . }}
           {{- end }}

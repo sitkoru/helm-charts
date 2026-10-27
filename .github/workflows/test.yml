@@ -1,0 +1,28 @@
+name: Проверка chart
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: azure/setup-helm@v4
+        with:
+          version: v4.3.1
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Установить зависимости тестов
+        run: python -m pip install -r tests/requirements.txt
+      - name: Проверить chart
+        run: |
+          helm lint charts/dotnet-app
+          python -m unittest discover -s tests -v
