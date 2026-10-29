@@ -21,7 +21,7 @@ HTTP-адрес Consul настраивает приложение отдель�
 
 Установщику Helm требуется право `get` на выбранный Service в его пространстве
 имён. Приложению это право не требуется. Для CI настройка описана в
-[правилах Kubernetes-доступа](https://github.com/sitkoru/ci-admin/blob/infra/ci/coredns-lookup-access/docs/kubernetes-access.md).
+[правилах Kubernetes-доступа](https://github.com/sitkoru/ci-admin/blob/main/docs/kubernetes-access.md).
 
 Проверка настройки по умолчанию без установки ресурсов:
 
