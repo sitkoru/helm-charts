@@ -30,7 +30,7 @@ class SecretEnvironmentTests(unittest.TestCase):
                 result = subprocess.run(
                     ["helm", "template", "secret-test", str(CHART),
                      "--namespace", "staging", "-f", "-"],
-                    input=yaml.safe_dump({"environment": "Staging", **values}),
+                    input=yaml.safe_dump({"environment": "Staging", "consulDns": {"enabled": False}, **values}),
                     text=True, capture_output=True, check=True,
                 )
                 documents = [doc for doc in yaml.safe_load_all(result.stdout) if doc]
