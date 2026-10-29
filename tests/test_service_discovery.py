@@ -92,7 +92,7 @@ def kubernetes_api(cluster_ip="10.42.0.53", namespace="kube-system", name="kube-
 
 class ServiceDiscoveryTests(unittest.TestCase):
     def test_grpc_external_addresses_use_pod_ip_and_services_are_preserved(self):
-        result = render()
+        result = render({"consulDns": {"enabled": False}})
         self.assertEqual(result.returncode, 0, result.stderr)
         environment = container_environment(result)
         for protocol in ("gRPC", "gRPCInsecure"):
@@ -125,7 +125,7 @@ class ServiceDiscoveryTests(unittest.TestCase):
                 cluster_ip=cluster_ip, namespace=settings.get("serviceNamespace", "kube-system"),
                 name=settings.get("serviceName", "kube-dns-upstream"),
             ) as args:
-                result = render({"consulDns": {"enabled": True, **settings}}, *args)
+                result = render({"consulDns": settings}, *args)
                 self.assertEqual(result.returncode, 0, result.stderr)
                 environment = container_environment(result)
                 self.assertEqual(
@@ -141,7 +141,7 @@ class ServiceDiscoveryTests(unittest.TestCase):
              [{"name": "ServiceDiscovery__Consul__DnsServers__0", "value": "192.0.2.1:53"}]),
         ):
             with self.subTest(values=values):
-                result = render(values)
+                result = render({**values, "consulDns": {"enabled": False}})
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertEqual(
                     [item for item in container_environment(result)

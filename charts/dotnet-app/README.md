@@ -8,7 +8,7 @@ Services сохраняются для клиентов, обращающихс�
 
 | Параметр | По умолчанию | Назначение |
 | --- | --- | --- |
-| `consulDns.enabled` | `false` | Получать адрес DNS при установке и обновлении chart |
+| `consulDns.enabled` | `true` | Получать адрес DNS при установке и обновлении chart |
 | `consulDns.serviceName` | `kube-dns-upstream` | Имя Service, ведущего к DNS с поддержкой зоны `.consul` |
 | `consulDns.serviceNamespace` | `kube-system` | Пространство имён DNS Service |
 
@@ -23,15 +23,20 @@ HTTP-адрес Consul настраивает приложение отдель�
 имён. Приложению это право не требуется. Для CI настройка описана в
 [правилах Kubernetes-доступа](https://github.com/sitkoru/ci-admin/blob/infra/ci/coredns-lookup-access/docs/kubernetes-access.md).
 
-Пример включения и проверки без установки ресурсов:
+Проверка настройки по умолчанию без установки ресурсов:
 
 ```sh
 helm template example charts/dotnet-app --namespace application \
-  --set consulDns.enabled=true --dry-run=server
+  --dry-run=server
 ```
 
-Обычный `helm template` без доступа к серверу поддерживается при выключенном
-`consulDns.enabled`. Для проверки включённого получения DNS нужен
+Для локального рендеринга без доступа к серверу явно отключите получение DNS:
+
+```sh
+helm template example charts/dotnet-app --set consulDns.enabled=false
+```
+
+Для проверки включённого получения DNS нужен
 `--dry-run=server` и доступ к кластеру.
 
 IP считывается при каждом `helm install` или `helm upgrade`; изменение IP Service

@@ -37,7 +37,7 @@ service:
   scheme: "HTTPS"
   annotations: { }
 consulDns:
-  enabled: false
+  enabled: true
   serviceName: kube-dns-upstream
   serviceNamespace: kube-system
 
