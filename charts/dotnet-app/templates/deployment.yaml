@@ -8,6 +8,10 @@
 {{- $dummy := set . "envVars" .Values.environment_env.other -}}
 {{- $dummy2 := set . "envResources" .Values.resources.other -}}
 {{- end }}
+{{- $managedEnv := list "APPLICATION__WEB__PORTS__gRPC__ExternalAddress" "APPLICATION__WEB__PORTS__gRPCInsecure__ExternalAddress" }}
+{{- if .Values.consulDns.enabled }}
+{{- $managedEnv = append $managedEnv "ServiceDiscovery__Consul__DnsServers__0" }}
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -69,21 +73,40 @@ spec:
             {{- toYaml .envResources | nindent 12 }}
           env:
           {{ range $k, $v := .Values.env }}
+          {{- if not (has $k $managedEnv) }}
             - name: {{ $k | quote }}
               value: {{ $v | quote }}
           {{- end }}
+          {{- end }}
           {{ range $k, $v := .envVars }}
+          {{- if not (has $k $managedEnv) }}
             - name: {{ $k | quote }}
               value: {{ $v | quote }}
+          {{- end }}
+          {{- end }}
+          {{- if .Values.consulDns.enabled }}
+          {{- $dns := lookup "v1" "Service" .Values.consulDns.serviceNamespace .Values.consulDns.serviceName }}
+          {{- if not $dns }}
+          {{- fail (printf "consulDns: Service %s/%s not found" .Values.consulDns.serviceNamespace .Values.consulDns.serviceName) }}
+          {{- end }}
+          {{- if or (not $dns.spec.clusterIP) (eq $dns.spec.clusterIP "None") }}
+          {{- fail (printf "consulDns: Service %s/%s must have a clusterIP" .Values.consulDns.serviceNamespace .Values.consulDns.serviceName) }}
+          {{- end }}
+            - name: ServiceDiscovery__Consul__DnsServers__0
+              value: {{ printf "%s:53" $dns.spec.clusterIP | quote }}
           {{- end }}
             - name: APPLICATION__WEB__PORTS__gRPC__Port
               value: "{{ .Values.service.grpcPort }}"
             - name: APPLICATION__WEB__PORTS__gRPCInsecure__Port
               value: "{{ .Values.service.grpcInsecurePort }}"
             - name: APPLICATION__WEB__PORTS__gRPC__ExternalAddress
-              value: "{{ include "dotnet-app.fullname" . }}-grpc.{{ .Release.Namespace}}.svc.cluster.local"
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
             - name: APPLICATION__WEB__PORTS__gRPCInsecure__ExternalAddress
-              value: "{{ include "dotnet-app.fullname" . }}-grpc.{{ .Release.Namespace}}.svc.cluster.local"
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
           {{- if or .Values.dumpsVolume }}
             - name: DOTNET_DbgEnableMiniDump
               value: "1"

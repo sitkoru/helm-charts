@@ -36,6 +36,11 @@ service:
   grpcInsecurePort: 82
   scheme: "HTTPS"
   annotations: { }
+consulDns:
+  enabled: false
+  serviceName: kube-dns-upstream
+  serviceNamespace: kube-system
+
 environment: "Production"
 ingress:
   enabled: true
