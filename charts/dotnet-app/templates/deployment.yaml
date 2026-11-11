@@ -81,18 +81,6 @@ spec:
           resources:
             {{- toYaml .envResources | nindent 12 }}
           env:
-          {{- if .Values.vaultSecrets }}
-            - name: VAULT__SECRETS__0
-              value: "YandexCloud/Common"
-          {{- $index := 1 }}
-          {{- range $path := .Values.vaultSecrets }}
-          {{- if ne $path "YandexCloud/Common" }}
-            - name: {{ printf "VAULT__SECRETS__%d" $index }}
-              value: {{ $path | quote }}
-          {{- $index = add $index 1 }}
-          {{- end }}
-          {{- end }}
-          {{- end }}
           {{ range $k, $v := .Values.env }}
           {{- if not (has $k $managedEnv) }}
             - name: {{ $k | quote }}
@@ -140,7 +128,7 @@ spec:
             - name: COMPlus_DbgMiniDumpName
               value: "/tmp/crashdumps/coredump.%p.%e.%h.%t.dmp"
           {{- end }}
-          {{- if or .Values.secrets .Values.b64secrets }}
+          {{- if or .Values.secrets .Values.b64secrets .Values.vaultSecrets }}
           envFrom:
             - secretRef:
                 name: {{ include "dotnet-app.fullname" . }}

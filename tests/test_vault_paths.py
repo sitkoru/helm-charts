@@ -21,21 +21,26 @@ class VaultPathsTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         docs = [doc for doc in yaml.safe_load_all(result.stdout) if doc]
         deployment = next(doc for doc in docs if doc["kind"] == "Deployment")
-        env = deployment["spec"]["template"]["spec"]["containers"][0]["env"]
-        self.assertEqual([item for item in env if item["name"].startswith("VAULT__SECRETS__")], [
-            {"name": "VAULT__SECRETS__0", "value": "YandexCloud/Common"},
-            {"name": "VAULT__SECRETS__1", "value": "Service/Common"},
-            {"name": "VAULT__SECRETS__2", "value": "Service/App"},
-        ])
+        container = deployment["spec"]["template"]["spec"]["containers"][0]
+        secret = next(doc for doc in docs if doc["kind"] == "Secret")
+        self.assertEqual(secret["stringData"], {
+            "VAULT__SECRETS__0": "YandexCloud/Common",
+            "VAULT__SECRETS__1": "Service/Common",
+            "VAULT__SECRETS__2": "Service/App",
+        })
+        self.assertFalse(any(item["name"].startswith("VAULT__SECRETS__") for item in container["env"]))
+        self.assertEqual(container["envFrom"], [{"secretRef": {"name": secret["metadata"]["name"]}}])
 
     def test_common_path_is_not_duplicated(self):
         result = render({"vaultSecrets": ["Service/A", "YandexCloud/Common", "Service/B", "YandexCloud/Common"]})
         self.assertEqual(result.returncode, 0, result.stderr)
         docs = [doc for doc in yaml.safe_load_all(result.stdout) if doc]
-        deployment = next(doc for doc in docs if doc["kind"] == "Deployment")
-        env = deployment["spec"]["template"]["spec"]["containers"][0]["env"]
-        self.assertEqual([item["value"] for item in env if item["name"].startswith("VAULT__SECRETS__")],
-                         ["YandexCloud/Common", "Service/A", "Service/B"])
+        secret = next(doc for doc in docs if doc["kind"] == "Secret")
+        self.assertEqual(secret["stringData"], {
+            "VAULT__SECRETS__0": "YandexCloud/Common",
+            "VAULT__SECRETS__1": "Service/A",
+            "VAULT__SECRETS__2": "Service/B",
+        })
 
     def test_legacy_path_conflicts_fail_for_all_sources_and_case_variants(self):
         for source in ("env", "environment_env", "secrets", "b64secrets"):
@@ -77,8 +82,11 @@ class VaultPathsTests(unittest.TestCase):
                 docs = [doc for doc in yaml.safe_load_all(result.stdout) if doc]
                 container = next(doc for doc in docs if doc["kind"] == "Deployment")["spec"]["template"]["spec"]["containers"][0]
                 self.assertIn({"name": "ENV_KEEP", "value": "env"}, container["env"])
-                self.assertEqual(sum(item["name"].startswith("VAULT__SECRETS__") for item in container["env"]), 2 if paths else 0)
+                self.assertFalse(any(item["name"].startswith("VAULT__SECRETS__") for item in container["env"]))
                 secret = next(doc for doc in docs if doc["kind"] == "Secret")
-                self.assertEqual(secret["stringData"], values["secrets"])
+                expected = {**values["secrets"]}
+                if paths:
+                    expected.update({"VAULT__SECRETS__0": "YandexCloud/Common", "VAULT__SECRETS__1": "App/A"})
+                self.assertEqual(secret["stringData"], expected)
                 self.assertEqual(secret["data"], values["b64secrets"])
                 self.assertEqual(container["envFrom"], [{"secretRef": {"name": secret["metadata"]["name"]}}])
