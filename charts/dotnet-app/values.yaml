@@ -117,3 +117,4 @@ affinity: { }
 env: { }
 secrets: { }
 b64secrets: { }
+vaultSecrets: []
