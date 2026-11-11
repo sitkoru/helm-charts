@@ -8,6 +8,15 @@
 {{- $dummy := set . "envVars" .Values.environment_env.other -}}
 {{- $dummy2 := set . "envResources" .Values.resources.other -}}
 {{- end }}
+{{- if .Values.vaultSecrets }}
+{{- range $source := list .Values.env .envVars .Values.secrets .Values.b64secrets }}
+  {{- range $key, $_ := $source }}
+    {{- if regexMatch "(?i)^VAULT__SECRETS__[0-9]+$" $key }}
+      {{- fail (printf "vaultSecrets cannot be combined with legacy VAULT__SECRETS__ variables: %s" $key) }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}
 {{- $managedEnv := list "APPLICATION__WEB__PORTS__gRPC__ExternalAddress" "APPLICATION__WEB__PORTS__gRPCInsecure__ExternalAddress" }}
 {{- if .Values.consulDns.enabled }}
 {{- $managedEnv = append $managedEnv "ServiceDiscovery__Consul__DnsServers__0" }}
@@ -72,6 +81,18 @@ spec:
           resources:
             {{- toYaml .envResources | nindent 12 }}
           env:
+          {{- if .Values.vaultSecrets }}
+            - name: VAULT__SECRETS__0
+              value: "YandexCloud/Common"
+          {{- $index := 1 }}
+          {{- range $path := .Values.vaultSecrets }}
+          {{- if ne $path "YandexCloud/Common" }}
+            - name: {{ printf "VAULT__SECRETS__%d" $index }}
+              value: {{ $path | quote }}
+          {{- $index = add $index 1 }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
           {{ range $k, $v := .Values.env }}
           {{- if not (has $k $managedEnv) }}
             - name: {{ $k | quote }}
