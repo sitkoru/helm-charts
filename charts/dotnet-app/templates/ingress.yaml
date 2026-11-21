@@ -20,10 +20,7 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
   {{- if .Values.ingress.secureHealthLocations }}
     nginx.ingress.kubernetes.io/configuration-snippet: |
-      location ~ ^/(health|healthz|ready) {
-        deny all;
-        return 404;
-      }
+      if ($uri ~ "^/(health|healthz|ready)") { return 404; }
   {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
